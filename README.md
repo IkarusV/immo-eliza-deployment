@@ -1,2 +1,25 @@
-# Immoeliza_deployement
-Final part of the Immoeliza project,  after having scrapped,cleaned,presented and build machine learning model now the final step is to push it on api and web ui interface to be able to be used by any user or developper to predict price on the house market.
+# Immo Eliza - Deployment
+
+Final part of the Immo Eliza project. After scraping, cleaning, analyzing and building ML models, this repo deploys the price prediction model as a REST API using FastAPI + Docker, hosted on Render.
+
+## Architecture
+
+- **Backend API** (FastAPI) → deployed on Render with Docker
+- **Frontend** (Streamlit) → coming later
+- **Model** → XGBoost tuned regressor (~1MB), trained on Belgian real estate data
+
+## Project structure
+
+```
+immo-eliza-deployment/
+├── api/
+│   ├── model/              # saved model + preprocessing artifacts
+│   │   ├── xgboost_tuned.joblib
+│   │   └── preprocessors.joblib
+│   ├── predict.py          # standalone prediction pipeline
+│   ├── app.py              # FastAPI application
+│   ├── Dockerfile
+│   └── requirements.txt
+├── streamlit/              # (coming later)
+└── README.md
+```
