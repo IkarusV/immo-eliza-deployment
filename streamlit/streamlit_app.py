@@ -43,7 +43,7 @@ col1, col2 = st.columns(2)
 with col1:
     property_state = st.selectbox("Property state", ["Unknown"] + PROPERTY_STATES)
     total_surface = st.number_input("Total surface (m²)", min_value=0, max_value=50000, value=0)
-    build_year = st.number_input("Build year", min_value=1800, max_value=2026, value=0)
+    build_year = st.number_input("Build year", min_value=0, max_value=2026, value=0)
     garage = st.checkbox("Garage")
     terrace = st.checkbox("Terrace")
     swimming_pool = st.checkbox("Swimming pool")
