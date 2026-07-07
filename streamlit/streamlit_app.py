@@ -98,7 +98,7 @@ st.divider()
 if st.button("Predict Price", type="primary", use_container_width=True):
     payload = build_payload()
 
-    with st.spinner("Asking the API... (first request might take ~30s if the server is waking up)"):
+    with st.spinner("Asking the API... (first request might take ~50s if the server is waking up from his sleep ! You should not see this message in your next few request :) )"):
         try:
             response = requests.post(f"{API_URL}/predict", json=payload, timeout=60)
 
@@ -117,6 +117,6 @@ if st.button("Predict Price", type="primary", use_container_width=True):
         except requests.exceptions.ConnectionError:
             st.error("Can't reach the API. The Render server might be sleeping, try again in 30 seconds.")
         except requests.exceptions.Timeout:
-            st.error("Request timed out. The server is probably waking up, try again.")
+            st.error("Request timed out. The server is probably waking up, please try again.")
         except Exception as e:
             st.error(f"Something went wrong: {e}")
