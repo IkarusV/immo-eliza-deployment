@@ -50,6 +50,8 @@ with col1:
 
 with col2:
     energy_consumption = st.number_input("Energy consumption (kWh/m²/year)", min_value=0.0, max_value=1000.0, value=0.0)
+    latitude = st.number_input("Latitude", min_value=0.0, max_value=51.6, value=0.0)
+    longitude = st.number_input("Longitude", min_value=0.0, max_value=6.5, value=0.0)
     preschool_distance = st.number_input("Distance to preschool (m)", min_value=0.0, max_value=50000.0, value=0.0)
     train_station_distance = st.number_input("Distance to train station (m)", min_value=0.0, max_value=50000.0, value=0.0)
     supermarket_distance = st.number_input("Distance to supermarket (m)", min_value=0.0, max_value=50000.0, value=0.0)
@@ -79,6 +81,10 @@ def build_payload():
         payload["build_year"] = build_year
     if energy_consumption > 0:
         payload["energy_consumption"] = energy_consumption
+    if latitude > 0:
+        payload["latitude"] = latitude
+    if longitude > 0:
+        payload["longitude"] = longitude
     if preschool_distance > 0:
         payload["preschool_distance_m"] = preschool_distance
     if train_station_distance > 0:
