@@ -126,3 +126,44 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             st.error("Request timed out. The server is probably waking up, please try again.")
         except Exception as e:
             st.error(f"Something went wrong: {e}")
+
+
+# about section at the bottom
+
+st.divider()
+
+with st.expander("About this project & API"):
+    st.markdown(f"""
+**Made by** [IkarusV](https://github.com/IkarusV)
+| [Source code](https://github.com/IkarusV/immo-eliza-deployment/tree/main)
+
+---
+
+**Want to use the API directly?**
+
+Base URL: `{API_URL}`
+
+- `GET /` — health check
+- `POST /predict` — get a price prediction
+
+**Example request:**
+```json
+{{
+  "data": {{
+    "property_type": "apartment",
+    "province": "brussels",
+    "livable_surface": 75,
+    "bedroom_count": 2,
+    "terrace": 1
+  }}
+}}
+```
+
+**Example response:**
+```json
+{{
+  "prediction": 275738.45,
+  "status_code": 200
+}}
+```
+""")
