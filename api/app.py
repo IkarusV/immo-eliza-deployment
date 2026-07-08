@@ -83,7 +83,7 @@ def predict_price(body: PredictionInput):
         # convert pydantic model to dict with the exact feature names the model expects
         prop = body.data.model_dump()
 
-        # map the clean API field name to the ugly column name from the dataset
+        # map the clean API field name to the column name from the dataset
         prop["energy_consumption_kWh/m2/year"] = prop.pop("energy_consumption")
 
         # if no lat/lon provided, use the province center as fallback
