@@ -17,8 +17,8 @@ PROPERTY_STATES = ["New", "Normal", "To renovate", "To restore"]
 
 # page setup
 
-st.set_page_config(page_title="Immo Eliza", page_icon="", layout="centered")
-st.title(" Immo Eliza Price Predictor")
+st.set_page_config(page_title="Immo Eliza", layout="centered")
+st.title("Immo Eliza Price Predictor")
 st.write("Get an estimated price for a Belgian property based on its features.")
 
 
@@ -26,7 +26,7 @@ st.write("Get an estimated price for a Belgian property based on its features.")
 
 st.sidebar.header("Property Info")
 
-property_type = st.sidebar.selectbox("Property type", ["apartment", "house"])
+property_type = st.sidebar.selectbox("Property type", ["apartment", "house"], help="Apartment or house")
 province = st.sidebar.selectbox("Province", PROVINCES)
 livable_surface = st.sidebar.number_input("Living area (m²)", min_value=10, max_value=2000, value=75)
 bedroom_count = st.sidebar.number_input("Bedrooms", min_value=0, max_value=20, value=2)
@@ -41,7 +41,7 @@ st.write("Fill in what you know, leave the rest as is. The model handles missing
 col1, col2 = st.columns(2)
 
 with col1:
-    property_state = st.selectbox("Property state", ["Unknown"] + PROPERTY_STATES)
+    property_state = st.selectbox("Property state", ["Unknown"] + PROPERTY_STATES, help="New, normal condition, needs renovation, or needs full restoration")
     total_surface = st.number_input("Total surface (m²)", min_value=0, max_value=50000, value=0)
     build_year = st.number_input("Build year", min_value=0, max_value=2026, value=0)
     garage = st.checkbox("Garage")
@@ -111,7 +111,7 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             if response.status_code == 200:
                 result = response.json()
                 price = result["prediction"]
-                st.success(f"Estimated price: **€{price:,.2f}**")
+                st.metric(label="Estimated price", value=f"€{price:,.2f}")
 
                 # show what was sent to the API
                 with st.expander("See request details"):
