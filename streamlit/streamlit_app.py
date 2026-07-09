@@ -14,6 +14,17 @@ PROVINCES = [
 
 PROPERTY_STATES = ["New", "Normal", "To renovate", "To restore"]
 
+# EPC label to kWh/m²/year midpoint conversion
+EPC_TO_KWH = {
+    "A": 65,
+    "B": 128,
+    "C": 213,
+    "D": 298,
+    "E": 383,
+    "F": 468,
+    "G": 600,
+}
+
 
 # page setup
 
@@ -54,6 +65,26 @@ st.markdown("""
         font-weight: bold;
         color: #264653;
     }
+
+    /* colored section labels */
+    .section-required {
+        background: #fdecea;
+        border-left: 4px solid #e74c3c;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #c0392b;
+    }
+    .section-optional {
+        background: #e8f0fe;
+        border-left: 4px solid #3b82f6;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #1d4ed8;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -68,7 +99,7 @@ st.markdown("""
 
 # sidebar: required fields
 
-st.sidebar.header("Property Info")
+st.sidebar.markdown('<div class="section-required">Required fields</div>', unsafe_allow_html=True)
 
 property_type = st.sidebar.selectbox("Property type", ["apartment", "house"], help="Apartment or house")
 province = st.sidebar.selectbox("Province", PROVINCES)
@@ -76,9 +107,9 @@ livable_surface = st.sidebar.number_input("Living area (m²)", min_value=10, max
 bedroom_count = st.sidebar.number_input("Bedrooms", min_value=0, max_value=20, value=2)
 
 
-# main area: optional fields in expandable sections
+# main area: optional fields
 
-st.subheader("Optional details")
+st.markdown('<div class="section-optional">Optional details</div>', unsafe_allow_html=True)
 st.write("Fill in what you know, leave the rest as is. The model handles missing values.")
 
 # split optional fields into two columns
@@ -87,19 +118,34 @@ col1, col2 = st.columns(2)
 with col1:
     property_state = st.selectbox("Property state", ["Unknown"] + PROPERTY_STATES, help="New, normal condition, needs renovation, or needs full restoration")
     total_surface = st.number_input("Total surface (m²)", min_value=0, max_value=50000, value=0)
-    build_year = st.number_input("Build year", min_value=0, max_value=2026, value=0)
+
+    # build year as a select_slider so we can start with "Unknown"
+    build_year_options = ["Unknown"] + list(range(1800, 2027))
+    build_year = st.select_slider("Build year", options=build_year_options, value="Unknown",
+        help="We only support buildings between 1800 and 2026 for our prediction.")
+
     garage = st.checkbox("Garage")
     terrace = st.checkbox("Terrace")
     swimming_pool = st.checkbox("Swimming pool")
 
 with col2:
-    energy_consumption = st.number_input("Energy consumption (kWh/m²/year)", min_value=0.0, max_value=1000.0, value=0.0)
+    # energy: pick an EPC label or type a manual value
+    epc_label = st.selectbox("Energy label (EPC)", ["Manual input"] + list(EPC_TO_KWH.keys()),
+        help="Pick a letter or choose 'Manual input' to type a value. Leave manual at 0 if you don't know.")
+    if epc_label == "Manual input":
+        energy_consumption = st.number_input("Energy (kWh/m²/year)", min_value=0.0, max_value=1000.0, value=0.0)
+    else:
+        energy_consumption = float(EPC_TO_KWH[epc_label])
+        st.caption(f"EPC {epc_label} = ~{int(energy_consumption)} kWh/m²/year")
+
     latitude = st.number_input("Latitude", min_value=0.0, max_value=51.6, value=0.0)
     longitude = st.number_input("Longitude", min_value=0.0, max_value=6.5, value=0.0)
-    preschool_distance = st.number_input("Distance to preschool (m)", min_value=0.0, max_value=50000.0, value=0.0)
-    train_station_distance = st.number_input("Distance to train station (m)", min_value=0.0, max_value=50000.0, value=0.0)
-    supermarket_distance = st.number_input("Distance to supermarket (m)", min_value=0.0, max_value=50000.0, value=0.0)
-    nearest_city_distance = st.number_input("Distance to nearest city (km)", min_value=0.0, max_value=200.0, value=0.0)
+
+    # distances as sliders (people rarely know exact numbers)
+    preschool_distance = st.slider("Distance to preschool (m)", 0, 10000, 0, step=100)
+    train_station_distance = st.slider("Distance to train station (m)", 0, 20000, 0, step=100)
+    supermarket_distance = st.slider("Distance to supermarket (m)", 0, 10000, 0, step=100)
+    nearest_city_distance = st.slider("Distance to nearest city (km)", 0.0, 100.0, 0.0, step=0.5)
 
 
 # build the payload (only send values that were actually filled in)
@@ -121,7 +167,7 @@ def build_payload():
         payload["property_state"] = property_state
     if total_surface > 0:
         payload["total_surface"] = total_surface
-    if build_year > 0:
+    if build_year != "Unknown":
         payload["build_year"] = build_year
     if energy_consumption > 0:
         payload["energy_consumption"] = energy_consumption
