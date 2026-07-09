@@ -154,25 +154,9 @@ if st.button("Predict Price", type="primary", use_container_width=True):
 
             if response.status_code == 200:
                 result = response.json()
-                price = result["prediction"]
-
-                # short version: 221K, 99K, etc.
-                short_price = f"{int(price / 1000)}K"
-
-                st.markdown(f"""
-<div class="result-box">
-    <p style="margin:0; color:#2A9D8F; font-weight:bold;">Estimated price</p>
-    <p class="price">€{short_price}</p>
-</div>
-""", unsafe_allow_html=True)
-
-                # toggle for full price
-                if st.checkbox("Show full price"):
-                    st.write(f"€{price:,.2f}")
-
-                # show what was sent to the API
-                with st.expander("See request details"):
-                    st.json(payload)
+                # save to session_state so it survives re-runs
+                st.session_state["price"] = result["prediction"]
+                st.session_state["payload"] = payload
             else:
                 st.error(f"API returned an error (status {response.status_code})")
                 st.write(response.text)
@@ -183,6 +167,26 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             st.error("Request timed out. The server is probably waking up, please try again.")
         except Exception as e:
             st.error(f"Something went wrong: {e}")
+
+
+# show result (lives outside the button so it stays on screen)
+
+if "price" in st.session_state:
+    price = st.session_state["price"]
+    short_price = f"{int(price / 1000)}K"
+
+    st.markdown(f"""
+<div class="result-box">
+    <p style="margin:0; color:#2A9D8F; font-weight:bold;">Estimated price</p>
+    <p class="price">€{short_price}</p>
+</div>
+""", unsafe_allow_html=True)
+
+    if st.checkbox("Show full price"):
+        st.write(f"€{price:,.2f}")
+
+    with st.expander("See request details"):
+        st.json(st.session_state["payload"])
 
 
 # about section at the bottom
