@@ -123,4 +123,4 @@ docker run -p 8000:8000 immo-eliza-api
 1. Go to share.streamlit.io
 2. Connect your GitHub repo
 3. Set main file path to `streamlit/streamlit_app.py`
-4. Deploy — auto-redeploys on push to main
+4. Deploy Auto-redeploys on push to main
