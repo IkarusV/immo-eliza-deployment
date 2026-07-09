@@ -111,6 +111,7 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             if response.status_code == 200:
                 result = response.json()
                 price = result["prediction"]
+                st.success("Prediction successful!")
                 st.metric(label="Estimated price", value=f"€{price:,.2f}")
 
                 # show what was sent to the API
