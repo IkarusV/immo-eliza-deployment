@@ -18,8 +18,52 @@ PROPERTY_STATES = ["New", "Normal", "To renovate", "To restore"]
 # page setup
 
 st.set_page_config(page_title="Immo Eliza", layout="centered")
-st.title("Immo Eliza Price Predictor")
-st.write("Get an estimated price for a Belgian property based on its features.")
+
+# custom CSS injected into the page
+st.markdown("""
+<style>
+    /* teal gradient banner behind the title */
+    .block-container > div:first-child {
+        padding-top: 0;
+    }
+    .title-banner {
+        background: linear-gradient(135deg, #2A9D8F, #264653);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .title-banner h1 {
+        color: white;
+        margin: 0;
+    }
+    .title-banner p {
+        color: #d4e4e1;
+        margin: 0.5rem 0 0 0;
+    }
+
+    /* colored box around the predicted price */
+    .result-box {
+        background: #e8f5f3;
+        border-left: 4px solid #2A9D8F;
+        padding: 1rem 1.5rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+    .result-box .price {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #264653;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# title banner with custom styling
+st.markdown("""
+<div class="title-banner">
+    <h1>Immo Eliza Price Predictor</h1>
+    <p>Get an estimated price for a Belgian property based on its features.</p>
+</div>
+""", unsafe_allow_html=True)
 
 
 # sidebar: required fields
@@ -111,8 +155,12 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             if response.status_code == 200:
                 result = response.json()
                 price = result["prediction"]
-                st.success("Prediction successful!")
-                st.metric(label="Estimated price", value=f"€{price:,.2f}")
+                st.markdown(f"""
+<div class="result-box">
+    <p style="margin:0; color:#2A9D8F; font-weight:bold;">Estimated price</p>
+    <p class="price">€{price:,.2f}</p>
+</div>
+""", unsafe_allow_html=True)
 
                 # show what was sent to the API
                 with st.expander("See request details"):
