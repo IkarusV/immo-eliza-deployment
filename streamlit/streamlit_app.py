@@ -155,12 +155,20 @@ if st.button("Predict Price", type="primary", use_container_width=True):
             if response.status_code == 200:
                 result = response.json()
                 price = result["prediction"]
+
+                # short version: 221K, 99K, etc.
+                short_price = f"{int(price / 1000)}K"
+
                 st.markdown(f"""
 <div class="result-box">
     <p style="margin:0; color:#2A9D8F; font-weight:bold;">Estimated price</p>
-    <p class="price">€{price:,.2f}</p>
+    <p class="price">€{short_price}</p>
 </div>
 """, unsafe_allow_html=True)
+
+                # toggle for full price
+                if st.checkbox("Show full price"):
+                    st.write(f"€{price:,.2f}")
 
                 # show what was sent to the API
                 with st.expander("See request details"):
